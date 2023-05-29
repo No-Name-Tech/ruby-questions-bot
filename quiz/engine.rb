@@ -17,7 +17,7 @@ class Engine
     @question_data = QuestionData.new
     @question_data.load_data
 
-    @current_time = Time.now.strftime("%d-%m-%Y %H:%M:%S")
+    @current_time = Time.now.strftime("%d-%m-%Y_%H:%M:%S")
     @writer = FileWriter.new('a', Quiz.instance.answers_dir, "#{@username}_#{@current_time}.txt")
     @statistics = Statistics.new(@writer)
   end
@@ -74,16 +74,12 @@ class Engine
           parse_respond_question(message, last_question, answers_to_questions, index_question_collection)
         end
 
-        if last_question != nil
-          question = last_question
-        else
-          begin
-            question = question_collection_enumerator.next
-            index_question_collection += 1
-          rescue StopIteration => ex
-            stop(message)
-            return
-          end
+        begin
+          question = question_collection_enumerator.next
+          index_question_collection += 1
+        rescue StopIteration => ex
+          stop(message)
+          return
         end
 
         send_question(question, message, index_question_collection)
@@ -98,7 +94,7 @@ class Engine
   end
 
   def send_question(question, message, index_question_collection)
-    question_text = "#{index_question_collection}. #{question.question_body}"
+    question_text = "#{index_question_collection + 1}. #{question.question_body}"
     question_answers = question.question_answers
     text_answers = question_answers.map { |answer| [{ text: answer }] }
     answers = Telegram::Bot::Types::ReplyKeyboardMarkup.new(
@@ -110,9 +106,9 @@ class Engine
 
   def parse_respond_question(message, last_question, answers_to_questions, index_question_collection)
     if message.text == last_question.question_correct_answer
-      @statistics.correct_answer
       answers_to_questions[index_question_collection] = true
       @bot.api.send_message(chat_id: message.chat.id, text: "Правильно!", reply_to_message_id: message.message_id)
+      @statistics.correct_answer
     else
       answers_to_questions[index_question_collection] = false
       @bot.api.send_message(chat_id: message.chat.id, text: "Неправильно!", reply_to_message_id: message.message_id)

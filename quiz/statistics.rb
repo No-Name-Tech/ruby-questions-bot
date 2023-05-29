@@ -30,10 +30,10 @@ class Statistics
   end
 
   def report
-    "Всього питань: #{total_answers}\n" + "Правильних відповідей: #{@correct_answers}\n" + "Неправильних відповідей: #{@incorrect_answers}\n" + "Відсоток коректності: #{'%.2f' % correct_percentage}%\n"
-  end
+    report = "Всього питань: #{total_answers}\n" + "Правильних відповідей: #{@correct_answers}\n" + "Неправильних відповідей: #{@incorrect_answers}\n" + "Відсоток коректності: #{'%.2f' % correct_percentage}%\n"
 
-  def print_report
     @writer.write(report)
+
+    report
   end
 end

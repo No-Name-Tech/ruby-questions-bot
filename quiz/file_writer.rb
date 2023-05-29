@@ -13,7 +13,7 @@ class FileWriter
   end
 
   def prepare_filename(dir, filename)
-    File.expand_path("#{filename}.txt", dir)
+    File.expand_path(filename, dir)
   end
 
 end

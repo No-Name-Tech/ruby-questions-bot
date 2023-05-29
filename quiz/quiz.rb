@@ -8,7 +8,7 @@ class Quiz
   def initialize
     @yaml_dir = "./yml"
     @in_ext = "*.yml"
-    @answers_dir = ""
+    @answers_dir = "./quiz/answers"
   end
 
   def config(&block)

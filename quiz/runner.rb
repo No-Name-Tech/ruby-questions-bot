@@ -37,7 +37,7 @@ class Runner
   end
 
   def handle_stop_command(message)
-    @bot.api.send_message(chat_id: message.chat.id, text: "Goodbye, #{message.from.first_name}!")
+    @bot.api.send_message(chat_id: message.chat.id, text: "До побачення, #{message.from.first_name}!")
   end
 
   def send_initial_message(message)
@@ -68,6 +68,6 @@ class Runner
     puts start_time
     puts end_time
 
-    @bot.api.send_message(chat_id: message.chat.id, text: "Goodbye, #{message.from.first_name}!")
+    @bot.api.send_message(chat_id: message.chat.id, text: "До побачення, #{message.from.first_name}!")
   end
 end
