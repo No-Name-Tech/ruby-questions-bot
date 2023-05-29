@@ -64,34 +64,17 @@ class Engine
     question_collection_enumerator = @question_data.collection.each
     index_question_collection = -1
     last_question = nil
-    last_c_question = nil
-    last_c_question_index = nil
 
     @bot.listen do |message|
       case message.text
       when '/stop'
         return stop(message)
-      when /^\/c \d+$/
-        index = message.text.match("\\d+").to_s.to_i
-        if index > @question_data.collection.length - 1
-          @bot.api.send_message(chat_id: message.chat.id, text: "Такого запитання не існує")
-        else
-          question = @question_data.collection[index]
-          send_question(question, message, index)
-          last_c_question = question
-          last_c_question_index = index
-        end
       else
-        it_is_c_question = last_c_question != nil
-        if it_is_c_question
-          parse_respond_c_question(message, last_c_question, answers_to_questions, last_c_question_index)
-          last_c_question = nil
-          last_c_question_index = nil
-        elsif last_question != nil
+        if last_question != nil
           parse_respond_question(message, last_question, answers_to_questions, index_question_collection)
         end
 
-        if it_is_c_question && last_question != nil
+        if last_question != nil
           question = last_question
         else
           begin
@@ -125,37 +108,14 @@ class Engine
     @bot.api.send_message(chat_id: message.chat.id, text: question_text, reply_markup: answers)
   end
 
-  def parse_respond_c_question(message, last_c_question, answers_to_questions, last_c_question_index)
-    if message.text == last_c_question.question_correct_answer
-      if answers_to_questions[last_c_question_index].nil?
-        @statistics.correct_answer
-      elsif answers_to_questions[last_c_question_index] == false
-        @statistics.correct_answer
-        # @statistics.delete_incorrect_answer
-      end
-      answers_to_questions[last_c_question_index] = true
-      @bot.api.send_message(chat_id: message.chat.id, text: "Правильно!", reply_to_message_id: message.message_id)
-    else
-      if answers_to_questions[last_c_question_index].nil?
-        @statistics.incorrect_answer
-        #@statistics.incorrect_answers
-      elsif answers_to_questions[last_c_question_index] == true
-        @statistics.incorrect_answer
-        # @statistics.delete_correct_answer
-      end
-      answers_to_questions[last_c_question_index] = false
-      @bot.api.send_message(chat_id: message.chat.id, text: "Неправильно!", reply_to_message_id: message.message_id)
-    end
-  end
-
   def parse_respond_question(message, last_question, answers_to_questions, index_question_collection)
     if message.text == last_question.question_correct_answer
       @statistics.correct_answer
       answers_to_questions[index_question_collection] = true
-      @bot.api.send_message(chat_id: message.chat.id, text: "Correct!", reply_to_message_id: message.message_id)
+      @bot.api.send_message(chat_id: message.chat.id, text: "Правильно!", reply_to_message_id: message.message_id)
     else
       answers_to_questions[index_question_collection] = false
-      @bot.api.send_message(chat_id: message.chat.id, text: "Incorrect!", reply_to_message_id: message.message_id)
+      @bot.api.send_message(chat_id: message.chat.id, text: "Неправильно!", reply_to_message_id: message.message_id)
       @statistics.incorrect_answer
     end
   end

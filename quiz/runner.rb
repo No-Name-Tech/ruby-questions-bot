@@ -28,7 +28,7 @@ class Runner
   private
 
   def handle_start_command(message)
-    username = message.from.first_name + " " + message.from.last_name
+    username = message.from.first_name
     start_time = Time.now
     send_start_message(message, username)
     engine = Engine.new(@bot, message.chat.id, username)
@@ -55,9 +55,10 @@ class Runner
       keyboard: [
         [{ text: "Почати тестування" }],
       ],
-      one_time_keyboard: true
+      one_time_keyboard: true,
+      resize_keyboard: true
     )
-    text = "#{username}, press the Start button!\n/start to begin.\n/stop to exit.\n/c 0 to select a question, where 0 is the question number."
+    text = "#{username}, натисніть кнопку Почати тестування\n/start для початку.\n/stop для виходу.\n"
     @bot.api.send_message(chat_id: message.chat.id, text: text, reply_markup: answer)
   end
 
